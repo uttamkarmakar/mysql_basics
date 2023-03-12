@@ -1,0 +1,136 @@
+
+//Creating a database name assignment2
+create database assignment2;
+use assignment2;
+
+-- Creaating the first table that is employee_code_name
+
+create table employee_code_table (
+    employee_code varchar(50),
+    employee_code_name varchar(50),
+    employee_domain varchar(50)
+);
+
+drop table employee_code_table;
+alter table employee_code_table
+add primary key(employee_code);
+desc employee_code_table;
+
+-- Creating the second table that is employee salary table
+
+create table employee_salary_table (
+    employee_id int,
+    employee_salary int,
+    employee_code varchar(50),
+    foreign key(employee_code) references employee_code_table(employee_code)
+);
+
+alter table employee_salary_table
+add primary key(employee_id); 
+
+create table employee_details_table (
+    employee_id int,
+    employee_first_name varchar(50),
+    employee_last_name varchar(50),
+    Graduation_percentile int,
+    foreign key(employee_id) references employee_salary_table(employee_id)
+);
+
+show tables;
+--Inserting values in the employee_code_table
+
+insert into employee_code_table (employee_code,employee_code_name,employee_domain)
+values("su_john","ru_john","Java");
+insert into employee_code_table (employee_code,employee_code_name,employee_domain)
+values("su_daenerys","du_daenerys","PHP");
+insert into employee_code_table (employee_code,employee_code_name,employee_domain)
+values("su_cersei","ru_cersei","Java");
+insert into employee_code_table (employee_code,employee_code_name,employee_domain)
+values("su_tyrion","tu_tyrion","Angular JS");
+
+select * from employee_code_table;
+
+--Inserting value into employee salary table
+
+insert into employee_salary_table(employee_id,employee_salary,employee_code)
+values(122,60000,"su_john");
+insert into employee_salary_table(employee_id,employee_salary,employee_code)
+values(123,25000,"su_daenerys");
+insert into employee_salary_table(employee_id,employee_salary,employee_code)
+values(124,44000,"su_cersei");
+insert into employee_salary_table(employee_id,employee_salary,employee_code)
+values(125,85000,"su_tyrion");
+
+select * from employee_salary_table;
+
+--Inserting value into employee details table
+
+insert into employee_details_table(employee_id,employee_first_name,employee_last_name,Graduation_percentile)
+values(122,"John","Snow",60);
+insert into employee_details_table(employee_id,employee_first_name,employee_last_name,Graduation_percentile)
+values(123,"Daenerys","Targaryen",88);
+insert into employee_details_table(employee_id,employee_first_name,employee_last_name,Graduation_percentile)
+values(124,"Cersei","Lannister",72);
+insert into employee_details_table(employee_id,employee_first_name,employee_last_name,Graduation_percentile)
+values(125,"Tyrion","Lannister",64);
+
+select * from employee_details_table;
+
+--Deleting a row from employee details table
+
+delete from employee_details_table
+where employee_id = 122;
+
+-- WAQ to list all employee first name with salary greater than 50k.
+
+select employee_first_name as Employess
+from employee_details_table as emd
+left join employee_salary_table as ems
+on employee_salary > 50000
+where emd.employee_id = ems.employee_id;
+
+-- WAQ to list all employee last name with graduation percentile greater than 70%.
+
+select employee_last_name,Graduation_percentile
+from employee_details_table as emd
+where emd.Graduation_percentile > 70;
+
+-- WAQ to list all employee code name with graduation percentile less than 70%.
+
+select employee_code_name from employee_code_table where employee_code in
+(select employee_code from employee_salary_table
+where employee_id in
+(select employee_id from employee_details_table where Graduation_Percentile<'70%')
+);
+
+-- WAQ to list all employee’s full name that are not of domain Java.
+
+select employee_domain from employee_code_table where employee_code in
+(select employee_code from employee_salary_table
+where employee_id in
+(select employee_id from employee_details_table where employee_domain <> "Java")
+);
+
+-- WAQ to list all employee_domain with sum of it's salary.
+
+select employee_code_table.employee_domain , sum(employee_salary_table.employee_salary)
+from employee_code_table 
+join employee_salary_table 
+on employee_code_table.employee_code = employee_salary_table.employee_code
+GROUP BY employee_code_table.employee_domain;
+
+-- Write the above query again but dont include salaries which is less than 30k.
+
+select employee_code_table.employee_domain,sum(employee_salary_table.employee_salary)
+from employee_code_table 
+join employee_salary_table 
+on employee_code_table.employee_code = employee_salary_table.employee_code and employee_salary_table.employee_salary > 30000
+GROUP BY employee_code_table.employee_domain;
+
+
+
+
+
+
+
+
